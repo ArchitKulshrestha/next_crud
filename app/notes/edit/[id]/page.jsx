@@ -2,12 +2,16 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+export const dynamic = "force-dynamic";
+import { useSnackbar } from "notistack";
 
 const EditNote = ({ params }) => {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const { id } = params;
+  const { enqueueSnackbar } = useSnackbar();
+
   useEffect(() => {
     fetch(`/api/notes/get/${id}`, {
       cache: "no-store",
@@ -35,14 +39,24 @@ const EditNote = ({ params }) => {
       .then((res) => {
         res.json();
         router.push("/");
+        enqueueSnackbar("Note updated successfully", {
+          variant: "success",
+        });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        enqueueSnackbar("Error updating note", { variant: "error" });
+      });
   };
 
   return (
     <section className="px-4 sm:px-20 py-4">
       <h1 className="text-2xl font-bold mb-4">Update Note</h1>
-      <Link href="/">Back</Link>
+      <Link
+        className="border-2  px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-700"
+        href="/">
+        Back
+      </Link>
       <form onSubmit={handleUpdate} className="mt-10 w-full sm:w-1/2">
         <div className="flex flex-col">
           <label className="text-sm font-bold" htmlFor="title">
@@ -73,7 +87,7 @@ const EditNote = ({ params }) => {
             placeholder="Enter description"></textarea>
         </div>
         <div className="mt-4">
-          <button className="border-2 border-gray-200 px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-700">
+          <button className="border-2 border-blue-400 px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-700">
             Create
           </button>
         </div>

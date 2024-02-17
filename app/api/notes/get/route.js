@@ -4,7 +4,8 @@ export const dynamic = "force-dynamic";
 export async function GET(request) {
   try {
     await connectToDB();
-    const allNotes = await notes.find();
+    const allNotes = await notes.find({}).populate("creator");
+
     return Response.json({
       allNotes,
     });

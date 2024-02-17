@@ -1,14 +1,18 @@
 import mongoose from "mongoose";
 const notesSchema = new mongoose.Schema({
+  creator: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   title: {
     type: String,
-    required: true,
-    trim: true,
+    required: [true, "Please provide a title"],
+
     maxlength: 50,
   },
   description: {
     type: String,
-    required: true,
+    required: [true, "Please provide a description"],
     trim: true,
     maxlength: 500,
   },

@@ -3,8 +3,16 @@ import Link from "next/link";
 import React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useSnackbar } from "notistack";
+
+export const dynamic = "force-dynamic";
+
 const Create = () => {
   const router = useRouter();
+  const { data: session } = useSession();
+  const { enqueueSnackbar } = useSnackbar();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -15,14 +23,21 @@ const Create = () => {
       body: JSON.stringify({
         title,
         description,
+        userId: session?.user.id,
       }),
       method: "POST",
     })
       .then((res) => {
         res.json();
         router.push("/");
+        enqueueSnackbar("Note created successfully", {
+          variant: "success",
+        });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        enqueueSnackbar("Error creating note", { variant: "error" });
+      });
   };
   return (
     <section className="px-4 sm:px-20 py-4">

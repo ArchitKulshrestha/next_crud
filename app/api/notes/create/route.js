@@ -2,7 +2,7 @@ import { connectToDB } from "@/libs/db";
 import notes from "@/models/notes";
 export const dynamic = "force-dynamic";
 export async function POST(request) {
-  const { title, description } = await request.json();
+  const { title, description, userId } = await request.json();
   if (!title || !description) {
     return Response.json(
       {
@@ -13,18 +13,15 @@ export async function POST(request) {
   }
   try {
     await connectToDB();
-    const note = await notes.create({
+    const newNote = new notes({
       title,
       description,
+      creator: userId,
     });
-    return Response.json(
-      {
-        note,
-      },
-      {
-        status: 201,
-      }
-    );
+    await newNote.save();
+    return new Response(JSON.stringify(newNote), {
+      status: 201,
+    });
   } catch (err) {
     return new Response("Error creating note", { status: 500 });
   }
